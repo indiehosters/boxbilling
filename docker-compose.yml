@@ -1,0 +1,24 @@
+db:
+  image: mysql:5.6
+  volumes:
+    - ./mysql/runtime:/var/lib/mysql
+    - ./data/install/structure.sql:/docker-entrypoint-initdb.d/astructure.sql
+    - ./data/install/content.sql:/docker-entrypoint-initdb.d/content.sql
+  env_file:
+    - ./.env
+app:
+  image: indiehosters/boxbilling
+  links:
+    - db
+  volumes:
+    - ./data:/var/www/html/
+  env_file:
+    - ./.env
+web:
+  image: nginx
+  volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  links:
+    - app
+  volumes_from:
+    - app
